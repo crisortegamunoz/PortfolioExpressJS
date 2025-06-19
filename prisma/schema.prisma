@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AboutMe {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String?
+  boxes       AboutMeBox[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  createdBy   String?
+  updatedBy   String?
+}
+
+model AboutMeBox {
+  id           Int      @id @default(autoincrement())
+  aboutMe      AboutMe  @relation(fields: [aboutMeId], references: [id])
+  aboutMeId    Int
+  title        String
+  description  String?
+  cssStyle     String?
+  iconImg      String?
+  orderPosition Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String?
+  updatedBy    String?
+}
+
+model Category {
+  id         Int         @id @default(autoincrement())
+  name       String
+  section    String
+  skills     Skill[]
+  experiences Experience[]
+  certificates Certificate[]
+  portfolios  Portfolio[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  createdBy  String?
+  updatedBy  String?
+}
+
+model Technology {
+  id         Int                @id @default(autoincrement())
+  name       String
+  version    String?
+  skills     Skill[]
+  portfolioTechnologies PortfolioTechnology[]
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  createdBy  String?
+  updatedBy  String?
+}
+
+model Skill {
+  id          Int       @id @default(autoincrement())
+  name        String?
+  isVisible   Boolean   @default(true)
+  percentage  Int?
+  cssClass    String?
+  cssStyle    String?
+  technology  Technology @relation(fields: [technologyId], references: [id])
+  technologyId Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  createdBy   String?
+  updatedBy   String?
+}
+
+model Experience {
+  id             Int               @id @default(autoincrement())
+  roleName       String?
+  roleDescription String?
+  entityName     String
+  entityDescription String?
+  entityLocation String?
+  periodStart    DateTime
+  periodEnd      DateTime
+  category       Category         @relation(fields: [categoryId], references: [id])
+  categoryId     Int
+  responsibilities ExperienceResponsibility[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+  updatedBy      String?
+}
+
+model ExperienceResponsibility {
+  id           Int        @id @default(autoincrement())
+  experience   Experience @relation(fields: [experienceId], references: [id])
+  experienceId Int
+  responsibility String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdBy     String?
+  updatedBy     String?
+}
+
+model Certificate {
+  id         Int      @id @default(autoincrement())
+  name       String
+  pdfUrl     String
+  imgUrl     String
+  entityName String
+  completed  DateTime
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String?
+  updatedBy  String?
+}
+
+model Portfolio {
+  id          Int       @id @default(autoincrement())
+  portfolioName String
+  clientName   String
+  img          String
+  description  String
+  repository   String?
+  demo         String?
+  startDate    DateTime
+  endDate      DateTime
+  publishDate  DateTime
+  category     Category @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+  technologies PortfolioTechnology[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String?
+  updatedBy    String?
+}
+
+model PortfolioTechnology {
+  id           Int        @id @default(autoincrement())
+  portfolio    Portfolio  @relation(fields: [portfolioId], references: [id])
+  portfolioId  Int
+  technology   Technology @relation(fields: [technologyId], references: [id])
+  technologyId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  createdBy    String?
+  updatedBy    String?
+}
